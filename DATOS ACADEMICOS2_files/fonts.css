@@ -1,0 +1,20 @@
+@font-face{
+	font-family:HelveticaNowDisplayBla;
+	src: url(HelveticaNowDisplayBlack.ttf);
+}
+@font-face{
+	font-family:HelveticaNowDisplayB;
+	src: url(HelveticaNowDisplayBold.ttf);
+}
+@font-face{
+	font-family:HelveticaNowDisplayExtraB;
+	src: url(HelveticaNowDisplayExtraBold.ttf);
+}
+@font-face{
+	font-family:HelveticaNowDisplayL;
+	src: url(HelveticaNowDisplayLight.ttf);
+}
+@font-face{
+	font-family:HelveticaNowDisplayR;
+	src: url(HelveticaNowDisplayRegular.ttf);
+}
