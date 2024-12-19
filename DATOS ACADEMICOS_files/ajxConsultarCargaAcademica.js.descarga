@@ -1,0 +1,249 @@
+/*function datosCargaAcademica(psK, psC){
+var registro =
+	{
+		datatype: "json",
+		datafields: [
+			{name:'accion',type:'string'},
+			{name:'idOferta',type:'int'},			
+			{name:'idMateria', type:'int'},
+			{name:'idOpcion', type:'int'},
+			{name:'idInscripcion', type:'int'},
+			{name:'asignatura', type:'varchar'},
+			{name:'periodo', type:'tinyint'},
+			{name:'grupo', type:'char'},
+			{name:'horario', type:'varchar'},
+			{name:'capacidadDisponible', type:'varchar'}
+ 		],
+		url: "../modelo/modC_aeInscripcion_DatosAcademicosConsultar.php",
+		data: {'psK':psK, 'psC':psC},
+		type: 'POST',
+		async: false
+	};
+	var dataAdapter = new $.jqx.dataAdapter(registro);
+	return dataAdapter;
+}
+function FNCConsultarCargaAcademica(psK, psC){
+	var dataAdapter= datosCargaAcademica(psK,psC);
+	console.log(dataAdapter);
+	$("#jqxGrid_CargaAcademica").jqxGrid({
+		width: '80%',
+		source: dataAdapter,                
+		//pageable: true,
+		autoheight: true,
+		//sortable: true,
+		autorowheight: true,
+		//theme: 'uaeh',
+		localization: getLocalization('es'),
+		filterable: false,
+		columns: [
+			//{text: '', datafield: 'accion', width: '10%' },
+			{text: 'ASIGNATURA', datafield: 'asignatura', width: '55%' },
+			{text: 'SEMESTRE', datafield: 'periodo', width: '15%' },
+			{text: 'GRUPO', datafield: 'grupo', width: '10%' }
+		 ]	
+	});
+	//alert('k=' + psK + ' c=' + psC);
+     /*var registro = null;
+	 $.ajax({
+	 	async: false,
+	 	url: '../modelo/modC_aeInscripcion_DatosAcademicosConsultar.php',
+	 	data: {'psK':psK, 'psC':psC},
+	 	type: 'POST',
+	 	success: function (data, status, xhr) {
+	 		$('#divCargaAcademica').html(data);
+	 		//registro = jQuery.parseJSON(data);                   
+	 	}
+	 });*/
+	 //console.log(registro[0].decodificado);		
+	 //FNCConsultarDatosAcademicos(psK);
+//}
+function datosAcademicos(psK){
+	var registro = null;
+	$.ajax({
+		async: false,
+		url: '../modelo/modC_aeInscripcion_DatosConsultar.php',
+		data: {'psK' : psK},
+		type: 'POST',
+		success: function (data, status, xhr) {  
+			registro = jQuery.parseJSON(data);                   
+		}
+	});
+	return registro;
+}
+function FNCConsultarDatosAcademicos(psK, psC){
+	//let datos = datosAcademicos(psK);
+	let datos = JSON.parse(datosAcademicos(psK));
+	//console.log(datos);
+
+	sCicloEscolar = psC;
+
+    for(var i in datos){
+    sNumeroCuenta = datos[i].numeroCuenta;
+    sApePaterno = datos[i].primerApellido;
+    sApeMaterno = datos[i].segundoApellido;
+    sNombres = datos[i].nombres;
+	sDependencia = datos[i].dependencia;
+	sProgramaEducativoVersionAnio = datos[i].programaEducativoVersionAnio;
+	sSemestre = datos[i].periodo;
+	sGrupo = datos[i].grupo;
+	sPromedio = datos[i].promedio;
+	sReprobadas = datos[i].numeroReprobadas;
+	}
+
+	let htmlEncabezado = `<div class="container-fluid whitebox mb-3" style="background-color: #801010; padding: 1rem;">
+		 <div class="row " style="display: flex; align-items: center;">
+			 <div class="col-md-4" style="width: 25%; flex:auto;margin-left: 5rem;">
+				 <img class="d-block img-fluid mx-auto" src="/generalesDIyS/_img/uaeh_b.png" style="max-width: 70%;" >
+			 </div>
+			 <div class="col-md-8 justify-content-center" style="width: 75%; flex:auto">
+				 <h1 id="texto" class="text-center" style="color: #FFFFFF; font-size: calc(0.75vw + 1.5vw);">UNIVERSIDAD AUT&Oacute;NOMA DEL ESTADO DE HIDALGO</h1>
+				 <h1 class="text-center" style="color: #FFFFFF; font-size: calc(0.375vw + 1.3vw);" >SECRETAR&Iacute;A GENERAL</h1>
+				 <h1 class="text-center" style="color: #FFFFFF; font-size: calc(0.300vw + 1.2vw);" >Direcci&oacute;n de Administraci&oacute;n Escolar</h1>
+			 </div>
+		 </div>
+	 </div>`;
+	$('#encabezado').html(htmlEncabezado);
+
+	fotoAlumno = `//images.weserv.nl/?url=sistemas.uaeh.edu.mx/anexos/fotos/alumno/nuevas/foto/UAEH${sNumeroCuenta}_foto.jpg`;
+	fotoDefault = '../../../generalesDIyS/_img/uaeh.png';
+
+	let htmlNombre = `
+	<h5 style="font-family:HelveticaNowDisplayL; font-size:35px"><br>Comprobante de inscripción<br><br></h5>
+	<h5 style="font-family:HelveticaNowDisplayExtraB; font-size:54px">${sCicloEscolar}</h5><br><br>
+    <table border="0" cellpadding="0" cellspacing="0" style="text-align:center">
+	<tr border="1">
+		<td rowspan="1" width="260" height="20" style="background-color:#96082F; color:#FFFFFF; font-family:HelveticaNowDisplayR; font-size:22px; line-height:1.9">Número de cuenta</td>
+		<td rowspan="1" width="260" height="20" style="background-color:#D60734; color:#FFFFFF; font-family:HelveticaNowDisplayBla; font-size:39px; line-height:1.9">${sNumeroCuenta}</td>
+		<td rowspan="3" border="0" cellpadding="0" cellspacing="0"><img src="${fotoAlumno}" onerror="this.src='${fotoDefault}'" width="115%"></td>
+	</tr>
+	<tr border="1">
+		<td valign="bottom" colspan="2" height="80" style="text-align:left; background-color:#EF062E; color:#FFFFFF; font-family:HelveticaNowDisplayR; font-size:33px; line-height:1.2">&nbsp;${sApePaterno} ${sApeMaterno}</td>   
+		</tr>
+	<tr border="1">
+		<td valign="top" colspan="2" height="80" style="vertical-align:text-top; text-align:left; background-color:#EF062E; color:#FFFFFF; font-family:HelveticaNowDisplayB; font-size:34px; line-height:1.2">&nbsp;${sNombres}</td>  
+	</tr>
+	</table>
+	<br><br>
+	`
+	$('#tablaNombre').html(htmlNombre);
+
+	let htmlTablasDatos =`
+	<table class="table-striped table-bordered" style="text-align:center">
+	<tr>
+		<td colspan="4" width="260" height="13" style="font-family:HelveticaNowDisplayL; font-size:29px; line-height:1.9">${sDependencia}</td>
+	</tr>
+	<tr>
+	  	<th colspan="4" width="240" height="13" style="font-family:HelveticaNowDisplayB; font-size:29px; line-height:1.9">${sProgramaEducativoVersionAnio}</th>
+	</tr>
+	<tr>
+		<td rowspan="1" width="260" height="13" style="font-family:HelveticaNowDisplayL; font-size:29px; line-height:1.9">Semestre</td>
+		<td rowspan="1" height="13" style="font-family:HelveticaNowDisplayB; font-size:29px; line-height:1.9">${sSemestre}</td>
+		<td rowspan="1" style="font-family:HelveticaNowDisplayL; font-size:29px; line-height:1.9">Grupo</td>
+		<td rowspan="1" style="font-family:HelveticaNowDisplayB; font-size:29px; line-height:1.9">${sGrupo}</td>
+	</tr>
+	<tr>
+	    <td rowspan="1" width="240" height="13" style="font-family:HelveticaNowDisplayB; font-size:29px; line-height:1.9">Promedio</td>
+	    <td rowspan="1" width="170" height="13" style="font-family:HelveticaNowDisplayB; font-size:29px; line-height:1.9">${sPromedio}</td>
+	    <td rowspan="1" width="260" height="13" style="font-family:HelveticaNowDisplayL; font-size:29px; line-height:1.9">Reprobadas</td>
+	    <td rowspan="1" width="187" height="13" style="font-family:HelveticaNowDisplayB; font-size:29px; line-height:1.9">${sReprobadas}</td>
+	</tr>
+	</table><br>
+		<h5 style="font-family:HelveticaNowDisplayB; font-size:29px">&nbsp;&nbsp;&nbsp;Carga académica</h5>
+	<br>
+    `
+	$('#tablasDatos').html(htmlTablasDatos);
+	
+	let htmlPiePagina= `<br><br>
+		<div style="font-family:HelveticaNowDisplayL; font-size:29px;" align="right:40%">
+           <font style="font-family:HelveticaNowDisplayExtraB">uaeh</font>.edu.mx
+        </div>`
+	$('#piePagina').html(htmlPiePagina);
+}
+
+function datosCargaAcademica(psK, psC){
+	var registro = null;
+	$.ajax({
+		async: false,
+		url: "../modelo/modC_aeInscripcion_CargaAcademicaConsultar.php",
+		data: {'psK':psK, 'psC':psC},
+		type: 'POST',
+		success: function (data, status, xhr) {  
+			registro = jQuery.parseJSON(data);                   
+		}
+	});
+	return registro;
+}
+function FNCConsultarCargaAcademica(psK, psC){
+	let carga = datosCargaAcademica(psK, psC);
+	//console.log(carga);
+
+	if(carga == "null"){
+		htmlCargaVacia = `<h1 style="font-family:HelveticaNowDisplayExtraB; font-size:30px;"><font color="#EF062E">El alumno no tiene asignaturas cargadas para este ciclo</font></h1>`
+		$('#cargaVacia').html(htmlCargaVacia);
+	}else{
+	let html = "";
+	html+= `
+	<table class="table-striped table-bordered" style="width:100%">
+	<thead>
+			<tr>
+				<td width="1000" style="text-align:center; font-family:HelveticaNowDisplayL; font-size:29px; line-height:1.9">Asignatura</td>
+				<td style="text-align:center; font-family:HelveticaNowDisplayL; font-size:29px; line-height:1.9">Semestre</td>
+				<td style="text-align:center; font-family:HelveticaNowDisplayL; font-size:29px; line-height:1.9">Grupo</td>
+			</tr>
+	</thead>
+	<tbody>
+	`
+		for(var i in carga){
+			sAsignatura = carga[i].asignatura;
+			sSemestre = carga[i].periodo;
+			sGrupo = carga[i].grupo;
+		html+=`	
+		<tr style="text-align: center">
+					<td width="300" height="60" style="font-family:HelveticaNowDisplayL; font-size:25px">${sAsignatura}</td>
+					<td width="220" height="60" style="font-family:HelveticaNowDisplayL; font-size:25px">${sSemestre}</td>
+					<td width="220" height="60" style="font-family:HelveticaNowDisplayL; font-size:25px">${sGrupo}</td>
+		</tr>
+	`
+	}
+	html+=`
+	</tbody>
+	</table>
+    `		
+	$('#cargaAcademica').html(html);
+	}
+	FNCConsultarDatosAcademicos(psK, psC);
+	FNCConsultarDatosEstadoKardex(psK);
+}
+
+function datosEstadoKardex(psK){
+	var registro = null;
+	$.ajax({
+		async: false,
+		url: '../modelo/modC_aeInscripcion_Kardex_EstadoConsultar.php',
+		data: {'psK' : psK},
+		type: 'POST',
+		success: function (data, status, xhr) {  
+			registro = jQuery.parseJSON(data);                   
+		}
+	});
+	return registro;
+}
+function FNCConsultarDatosEstadoKardex(psK){
+
+	let datosKardex = JSON.parse(datosEstadoKardex(psK));
+	//console.log(datosKardex);
+
+    for(var i in datosKardex){
+    sIdEstado = datosKardex[i].idEstado;
+    sEstado = datosKardex[i].estado;
+	}
+
+	let htmlEstadoKardex = `
+	<table border="0" rules="all" cellpadding="0" style="text-align:center">
+	<tr>
+	    <td rowspan="1" width="240" height="20" style="font-family:HelveticaNowDisplayB; font-size:29px; line-height:1.9; border: solid 1px #E6E5E5">Estatus</td>
+		<td rowspan="1" width="260" height="20" style="font-family:HelveticaNowDisplayExtraB; font-size:50px; line-height:1.9">&nbsp;&nbsp;&nbsp;<font color="#76BB1B">${sEstado}</font></td>
+	</tr>
+	</table><br><br>`
+	$('#estadoKardex').html(htmlEstadoKardex);
+}
